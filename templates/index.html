@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>helloou</title>
+</head>
+<body>
+
+{#<form action="/add_contact", method="post">#}
+{#    <input type="text" name="nombres" placeholder="Nombres">#}
+{#    <input type="text" name="telefono" placeholder="Telefono">#}
+{#    <input type="text" name="email" placeholder="Email">#}
+{#    <button type="submit">Guardar</button>#}
+{#</form>#}
+
+{% with messages = get_flashed_messages()  %}
+{% if messages %}
+{% for msg in messages %}
+<p> {{msg}}</p>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+
+<form action="/add_contact", method="post">
+    <input type="text" name="nombres" placeholder="Nombres">
+    <input type="text" name="telefono" placeholder="Telefono">
+    <input type="text" name="email" placeholder="Email">
+    <button type="submit">Save</button>
+</form>
+
+<table border="1" >
+    <thead>
+        <tr>
+            <td>Nombres</td>
+            <td>Telefono</td>
+            <td>Email</td>
+            <td>Acciones</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in contactos %}
+        <tr>
+            <td> {{ c.1 }} </td>
+            <td> {{ c.2 }} </td>
+            <td> {{ c.3 }} </td>
+            <td>
+                <a href="/edit/{{ c.0 }}">Edit</a>
+                <a href="/delete/{{ c.0 }}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
+
+</body>
+</html>
