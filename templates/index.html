@@ -32,6 +32,7 @@
 <table border="1" >
     <thead>
         <tr>
+            <td>id</td>
             <td>Nombres</td>
             <td>Telefono</td>
             <td>Email</td>
@@ -41,6 +42,7 @@
     <tbody>
         {% for c in contactos %}
         <tr>
+            <td> {{ c.0 }} </td>
             <td> {{ c.1 }} </td>
             <td> {{ c.2 }} </td>
             <td> {{ c.3 }} </td>

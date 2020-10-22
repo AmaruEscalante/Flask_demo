@@ -1,11 +1,14 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, flash, url_for, sessions
 import sqlite3
 
 app = Flask(__name__)
+app.secret_key = 'super secret key'
+
 
 conn = sqlite3.connect('contactos.db')
-# conn.execute('CREATE TABLE contactos (id INT auto_increment, nombre TEXT, telefono TEXT, email TEXT)')
+conn.execute('CREATE TABLE IF NOT EXISTS contactos (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, telefono TEXT, email TEXT)')
 
+secretkey = "secretkey"
 
 @app.route('/')
 def index():
@@ -27,7 +30,7 @@ def add_contact():
 
             with sqlite3.connect("contactos.db") as con:
                 cur = con.cursor()
-                cur.execute("INSERT INTO contactos (nombre, telefono, email) VALUES (?,?,?)", (nomb,telf,email))
+                cur.execute("INSERT INTO contactos (nombre, telefono, email) VALUES (?,?,?)", (nomb, telf, email))
                 con.commit()
                 msg = "Record succesfully added"
         except:
@@ -35,11 +38,47 @@ def add_contact():
             msg = "error in insert operation"
 
         finally:
-            return render_template("index.html", msg = msg)
+            flash(msg)
+            return redirect(url_for('index'))
             con.close()
 
+    return redirect(url_for('index'))
 
-    return 'Contacto'
+
+
+@app.route('/edit/<id>')
+def edit_contact(id):
+    conn = sqlite3.connect('contactos.db')
+    print('Opened db succesfully')
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM contactos WHERE id = ?',(id))
+    data = cur.fetchall()
+    print(data[0])
+    return render_template('edit.html', contacto=data[0])
+
+
+@app.route('/update/<id>', methods=['POST'])
+def update_contact(id):
+    if request.method == 'POST':
+        nom = request.form['nombres']
+        tel = request.form['telefono']
+        email = request.form['email']
+        print('UPDATE', id, nom, tel, email)
+        cur = conn.cursor()
+        cur.execute("""
+                    update contactos
+                    set nombres = ?,
+                        telefono = ?,
+                        email = ?,
+                    where id = ?
+        """,(nom,tel,email, id))
+        flash('Contact added succesfully')
+        return redirect(url_for('index'))
+
+
+@app.route('/delete/<string:id>')
+def delete_contact(id):
+    return 'Registro eliminado'
 
 
 if __name__ == '__main__':
