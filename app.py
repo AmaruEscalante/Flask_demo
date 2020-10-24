@@ -45,7 +45,6 @@ def add_contact():
     return redirect(url_for('index'))
 
 
-
 @app.route('/edit/<id>')
 def edit_contact(id):
     conn = sqlite3.connect('contactos.db')
@@ -57,28 +56,34 @@ def edit_contact(id):
     return render_template('edit.html', contacto=data[0])
 
 
+@app.route('/delete/<string:id>')
+def delete_contact(id):
+    # nom = request.form['nombres']
+    # telf = request.form['telefono']
+    # email = request.form['email']
+    # print('DELETE', id, nom, telf, email)
+    conn = sqlite3.connect('contactos.db')
+    cur = conn.cursor()
+    cur.execute("DELETE FROM contactos where id = ?",(id))
+    conn.commit()
+    flash('Contact deleted succesfully')
+    return redirect(url_for('index'))
+
+
 @app.route('/update/<id>', methods=['POST'])
 def update_contact(id):
     if request.method == 'POST':
         nom = request.form['nombres']
-        tel = request.form['telefono']
+        telf = request.form['telefono']
         email = request.form['email']
-        print('UPDATE', id, nom, tel, email)
+        print('UPDATE', id, nom, telf, email)
+        conn = sqlite3.connect('contactos.db')
+        print('Opened db succesfully')
         cur = conn.cursor()
-        cur.execute("""
-                    update contactos
-                    set nombres = ?,
-                        telefono = ?,
-                        email = ?,
-                    where id = ?
-        """,(nom,tel,email, id))
-        flash('Contact added succesfully')
+        cur.execute("update contactos set nombre = ?,telefono = ?,email = ? where id = ?",(nom,telf,email, id))
+        conn.commit()
+        flash('Contact modified succesfully')
         return redirect(url_for('index'))
-
-
-@app.route('/delete/<string:id>')
-def delete_contact(id):
-    return 'Registro eliminado'
 
 
 if __name__ == '__main__':
